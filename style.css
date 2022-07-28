@@ -1,17 +1,15 @@
-#game div {
-  border: 1px solid black;
-  width: 15%;
-  height: 200px;
-  margin: 10px;
-  display: flex;
-}
-
 .cards {
-  max-width: 150px;
+  max-width: 120px;
   padding: 4px;
   background-color: rgb(15, 93, 45);
 }
 
 #game {
-  margin-top: 150px;
+  margin-top: 70px;
+}
+
+.flip {
+  transition: transform 0.4s;
+  transform: rotateY(360deg);
+  transform-style: preserve-3d;
 }
