@@ -13,3 +13,12 @@
   transform: rotateY(360deg);
   transform-style: preserve-3d;
 }
+.pMargin {
+  margin-bottom: 0px;
+}
+.container {
+  color: white
+}
+.modal {
+  color: black
+}

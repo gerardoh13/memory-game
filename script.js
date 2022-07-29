@@ -1,6 +1,12 @@
 const gameContainer = document.getElementById("game");
 const scoreDisplay = document.getElementById("score")
 const timerDisplay = document.getElementById("timer")
+const sixHigh = document.getElementById("sixHigh")
+const twelveHigh = document.getElementById("twelveHigh")
+const twoSixHigh = document.getElementById("twoSixHigh")
+const pScore = document.getElementById("pScore")
+
+
 document.body.style.backgroundColor = 'rgb(15, 93, 45)';
 const cardBack = "back-of-card.jpg"
 
@@ -49,26 +55,26 @@ function startStop() {
   if (!timer){
     timer = accurateInterval(updateTimer, 1000);
   } else {
-    console.log('no timer')
     timer.cancel()
     timer = ''
   }
 }
-
 function updateTimer () {
   timeElapsed++
-  let mins = Math.floor(timeElapsed / 60)
-  let secs = timeElapsed - mins * 60
+  let newTime = clockify(timeElapsed)
+  timerDisplay.innerText = newTime
+}
+function clockify (time) {
+  let mins = Math.floor(time / 60)
+  let secs = time - mins * 60
   mins = mins < 10 ? '0' + mins : mins
   secs = secs < 10 ? '0' + secs: secs
-  timerDisplay.innerText = `Time: ${mins}:${secs}`
+  return `Time: ${mins}:${secs}`
 }
-
 function updateScore(){
   cardFlips++
   scoreDisplay.innerText = `Cards flipped: ${cardFlips}`
 }
-
 function shuffle(array) {
   let counter = array.length;
   while (counter > 0) {
@@ -80,7 +86,6 @@ function shuffle(array) {
   }
   return array;
 }
-
 function createCards(cardArray) {
   for (let card of cardArray) {
     const newImg = document.createElement("img")
@@ -89,7 +94,6 @@ function createCards(cardArray) {
     newImg.id = card.id
     newImg.addEventListener("click", handleCardClick);
     gameContainer.append(newImg);
-
   }
 }
 function checkMatches () {
@@ -107,9 +111,58 @@ function checkMatches () {
   }
   clickedCards = []
   if (matchCount === cardsPlayed / 2){
-    startStop()
-    alert('Congrats! You matched all the cards!')
+    gameOver()
   }
+}
+function gameOver () {
+  startStop()
+  let score = {}
+  score.cardsPlayed = cardsPlayed
+  score.timeElapsed = timeElapsed
+  score.cardFlips = cardFlips
+  if (checkHighScore(score)){
+    pScore.innerText = `New High Score! Your score was ${score.cardFlips} card flips in ${clockify(score.timeElapsed)}`
+  } else {
+    pScore.innerText = `Your score was ${score.cardFlips} card flips in ${clockify(score.timeElapsed)}`
+  }
+  setHighScore(score)
+  $("#gameOverModal").modal()
+  $("#gameOverModal").on('hide.bs.modal', retrieveScores)
+}
+function setHighScore (score){
+if (checkHighScore(score)){
+  let JSONscore = JSON.stringify(score)
+  sessionStorage.setItem(`${cardsPlayed}CardHighScore`, JSONscore)
+}
+}
+
+function checkHighScore (obj){
+  if (!sessionStorage.getItem(`${obj.cardsPlayed}CardHighScore`)){
+    return true
+  } else {
+    let HighScore = JSON.parse(sessionStorage.getItem(`${obj.cardsPlayed}CardHighScore`))
+    if (HighScore.cardFlips > obj.cardFlips){
+      return true
+    }
+    if (HighScore.cardFlips === obj.cardFlips && HighScore.timeElapsed > obj.timeElapsed){
+        return true
+    }
+  }
+  return false
+}
+function retrieveScores (){
+    let sixCardHigh = JSON.parse(sessionStorage.getItem('6CardHighScore'))
+    let twelveCardHigh = JSON.parse(sessionStorage.getItem('12CardHighScore'))
+    let twoSixCardHigh = JSON.parse(sessionStorage.getItem('26CardHighScore'))
+    if (sixCardHigh){
+      sixHigh.innerText = `6 Cards - Card Flips: ${sixCardHigh.cardFlips} - ${clockify(sixCardHigh.timeElapsed)}`
+    }
+    if (twelveCardHigh){
+      twelveHigh.innerText = `12 Cards - Card Flips: ${twelveCardHigh.cardFlips} - ${clockify(twelveCardHigh.timeElapsed)}`
+    }
+    if (twoSixCardHigh){
+      twoSixHigh.innerText = `26 Cards - Card Flips: ${twoSixCardHigh.cardFlips} - ${clockify(twoSixCardHigh.timeElapsed)}`
+    }
 }
 function handleCardClick(event) {
   if (clickedCards.length === 2){
@@ -128,7 +181,6 @@ function handleCardClick(event) {
     }
   }
 }
-
 function removeAllChildNodes(parent) {
   while (parent.firstChild) {
       parent.removeChild(parent.firstChild);
@@ -155,4 +207,5 @@ function newGame(num){
     createCards(shuffledCards);
     startStop()
   }
-
+  //retrieve high scores when page is loaded
+  retrieveScores()
