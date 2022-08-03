@@ -132,15 +132,15 @@ function gameOver () {
 function setHighScore (score){
 if (checkHighScore(score)){
   let JSONscore = JSON.stringify(score)
-  sessionStorage.setItem(`${cardsPlayed}CardHighScore`, JSONscore)
+  localStorage.setItem(`${cardsPlayed}CardHighScore`, JSONscore)
 }
 }
 
 function checkHighScore (obj){
-  if (!sessionStorage.getItem(`${obj.cardsPlayed}CardHighScore`)){
+  if (!localStorage.getItem(`${obj.cardsPlayed}CardHighScore`)){
     return true
   } else {
-    let HighScore = JSON.parse(sessionStorage.getItem(`${obj.cardsPlayed}CardHighScore`))
+    let HighScore = JSON.parse(localStorage.getItem(`${obj.cardsPlayed}CardHighScore`))
     if (HighScore.cardFlips > obj.cardFlips){
       return true
     }
@@ -151,9 +151,9 @@ function checkHighScore (obj){
   return false
 }
 function retrieveScores (){
-    let sixCardHigh = JSON.parse(sessionStorage.getItem('6CardHighScore'))
-    let twelveCardHigh = JSON.parse(sessionStorage.getItem('12CardHighScore'))
-    let twoSixCardHigh = JSON.parse(sessionStorage.getItem('26CardHighScore'))
+    let sixCardHigh = JSON.parse(localStorage.getItem('6CardHighScore'))
+    let twelveCardHigh = JSON.parse(localStorage.getItem('12CardHighScore'))
+    let twoSixCardHigh = JSON.parse(localStorage.getItem('26CardHighScore'))
     if (sixCardHigh){
       sixHigh.innerText = `6 Cards - Card Flips: ${sixCardHigh.cardFlips} - ${clockify(sixCardHigh.timeElapsed)}`
     }
